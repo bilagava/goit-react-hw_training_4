@@ -57,7 +57,7 @@ class App extends Component {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
-  onImageClick = url => {
+  openModal = url => {
     this.setState({
       modalImage: url,
       showModal: true,
@@ -76,11 +76,11 @@ class App extends Component {
         <SearchBar onSubmit={this.handleSubmit} />
         {loading && <Loader />}
         {images.length !== 0 && (
-          <ImageGallery images={images} onImageClick={this.onImageClick} />
+          <ImageGallery images={images} openModal={this.openModal} />
         )}
 
         {images.length !== totalImages && !loading && (
-          <Button onClick={this.onLoadMoreClick} />
+          <Button onLoadMoreClick={this.onLoadMoreClick} />
         )}
 
         {showModal && (

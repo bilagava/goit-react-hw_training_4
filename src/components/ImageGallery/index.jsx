@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import ImageGalleryItem from './ImageGalleryItem';
 import styles from './styles.module.css';
 
-const ImageGallery = ({ images, onImageClick }) => {
+const ImageGallery = ({ images, openModal }) => {
   return (
     <ul className={styles.gallery}>
-      {images.map(image => (
+      {images.map(({ id, webformatURL, largeImageURL, tags }) => (
         <ImageGalleryItem
-          key={image.id}
-          smallImage={image.webformatURL}
-          onOpen={() => onImageClick(image.largeImageURL, image.tags)}
-          tag={image.tags}
+          key={id}
+          smallImage={webformatURL}
+          onOpen={() => openModal(largeImageURL, tags)}
+          tag={tags}
         />
       ))}
     </ul>
@@ -19,11 +19,13 @@ const ImageGallery = ({ images, onImageClick }) => {
 };
 
 ImageGallery.propTypes = {
-  onImageClick: PropTypes.func.isRequired,
+  openModal: PropTypes.func.isRequired,
   images: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       tags: PropTypes.string.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
 };
