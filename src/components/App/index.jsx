@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Button from 'components/Button';
@@ -8,91 +8,81 @@ import styles from './styles.module.css';
 
 const APIKEY = '27281986-59f4397e165b177c7084776c9';
 
-class App extends Component {
-  state = {
-    name: '',
-    images: [],
-    page: 1,
-    loading: false,
-    showModal: false,
-    modalImage: '',
-    totalImages: 0,
-  };
+function App() {
+  const [name, SetName] = useState('');
+  const [images, SetImages] = useState([]);
+  const [page, SetPage] = useState(1);
+  const [loading, SetLoading] = useState(false);
+  const [showModal, SetShowModal] = useState(false);
+  const [modalImage, SetModalImage] = useState('');
+  const [totalImages, SetTotalImages] = useState('');
+  const [tag, SetTag] = useState('');
+  const [showBtn, SetShowBtn] = useState(false);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.name !== this.state.name ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({ loading: true });
-      fetch(
-        `https://pixabay.com/api/?q=${this.state.name}&page=${this.state.page}&key=${APIKEY}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(response => response.json())
-        .then(image => {
-          if (!image.total) {
-            return alert('К сожалению по Вашему запросу ничего не найдено');
-          }
-
-          this.setState(prevState => ({
-            images: [...prevState.images, ...image.hits],
-            totalImages: image.total,
-          }));
-        })
-        .catch(error => error)
-        .finally(() => {
-          this.setState({ loading: false });
-        });
+  useEffect(() => {
+    if (!name) {
+      return;
     }
-  }
+    SetLoading(true);
+    fetch(
+      `https://pixabay.com/api/?q=${name}&page=${page}&key=${APIKEY}&image_type=photo&orientation=horizontal&per_page=12`
+    )
+      .then(response => response.json())
+      .then(image => {
+        if (!image.total) {
+          SetLoading(false);
+          SetShowBtn(false);
+          return alert('К сожалению по Вашему запросу ничего не найдено');
+        }
 
-  handleSubmit = name => {
-    if (this.state.name === name) {
-      return alert(`Вы уже просматриваете ${name}`);
+        SetImages(prevState => [...prevState, ...image.hits]);
+        SetTotalImages(image.total);
+        SetLoading(false);
+        SetShowBtn(true);
+      })
+      .catch(error => error);
+  }, [name, page]);
+
+  const handleSubmit = inputName => {
+    if (name === inputName) {
+      return alert(`Вы уже просматриваете ${inputName}`);
     }
-    this.setState({ name: name.toLowerCase(), images: [], page: 1 });
+    SetName(inputName.toLowerCase());
+    SetImages([]);
+    SetPage(1);
   };
 
-  onLoadMoreClick = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
+  const onLoadMoreClick = () => {
+    SetPage(prevState => prevState + 1);
   };
 
-  openModal = url => {
-    this.setState({
-      modalImage: url,
-      showModal: true,
-    });
+  const openModal = (url, tag) => {
+    SetModalImage(url);
+    SetShowModal(true);
+    SetTag(tag);
   };
 
-  modalClose = () => {
-    this.setState({ showModal: false });
+  const modalClose = () => {
+    SetShowModal(false);
   };
 
-  render() {
-    const { images, loading, showModal, modalImage, totalImages } = this.state;
+  return (
+    <div className={styles.container}>
+      <SearchBar onSubmit={handleSubmit} />
+      {loading && <Loader />}
+      {images.length !== 0 && (
+        <ImageGallery images={images} openModal={openModal} />
+      )}
 
-    return (
-      <div className={styles.container}>
-        <SearchBar onSubmit={this.handleSubmit} />
-        {loading && <Loader />}
-        {images.length !== 0 && (
-          <ImageGallery images={images} openModal={this.openModal} />
-        )}
+      {!loading && images.length !== totalImages && showBtn && (
+        <Button onLoadMoreClick={onLoadMoreClick} />
+      )}
 
-        {images.length !== totalImages && !loading && (
-          <Button onLoadMoreClick={this.onLoadMoreClick} />
-        )}
-
-        {showModal && (
-          <Modal
-            image={modalImage}
-            tag={this.props.tag}
-            onModalClose={this.modalClose}
-          />
-        )}
-      </div>
-    );
-  }
+      {showModal && (
+        <Modal image={modalImage} tag={tag} onModalClose={modalClose} />
+      )}
+    </div>
+  );
 }
 
 export default App;

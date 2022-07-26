@@ -1,45 +1,41 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './styles.module.css';
 
-class SearchBar extends Component {
-  state = {
-    inputValue: '',
+function SearchBar({ onSubmit }) {
+  const [inputValue, SetInputValue] = useState('');
+
+  const handleInputChange = evt => {
+    SetInputValue(evt.currentTarget.value);
   };
 
-  handleInputChange = evt => {
-    this.setState({ inputValue: evt.currentTarget.value });
-  };
-
-  onFormSubmit = evt => {
+  const onFormSubmit = evt => {
     evt.preventDefault();
-    if (this.state.inputValue === '') {
+    if (inputValue === '') {
       alert('Введите название');
       return;
     }
 
-    this.props.onSubmit(this.state.inputValue);
+    onSubmit(inputValue);
   };
 
-  render() {
-    return (
-      <header className={styles.searchbar}>
-        <form onSubmit={this.onFormSubmit} className={styles.searchForm}>
-          <button type="submit" className={styles.searchFormButton}></button>
+  return (
+    <header className={styles.searchbar}>
+      <form onSubmit={onFormSubmit} className={styles.searchForm}>
+        <button type="submit" className={styles.searchFormButton}></button>
 
-          <input
-            onChange={this.handleInputChange}
-            value={this.state.inputValue}
-            className={styles.searchFormInput}
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-          />
-        </form>
-      </header>
-    );
-  }
+        <input
+          onChange={handleInputChange}
+          value={inputValue}
+          className={styles.searchFormInput}
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+        />
+      </form>
+    </header>
+  );
 }
 
 SearchBar.propTypes = {
