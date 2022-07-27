@@ -73,13 +73,11 @@ function App() {
       {images.length !== 0 && (
         <ImageGallery images={images} openModal={openModal} />
       )}
-
-      {!loading && images.length !== totalImages && showBtn && (
-        <Button onLoadMoreClick={onLoadMoreClick} />
-      )}
-
       {showModal && (
         <Modal image={modalImage} tag={tag} onModalClose={modalClose} />
+      )}
+      {!loading && images.length !== totalImages && showBtn && (
+        <Button onLoadMoreClick={onLoadMoreClick} />
       )}
     </div>
   );
