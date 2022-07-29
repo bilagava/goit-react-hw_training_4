@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import styles from './styles.module.css';
 
 function SearchBar({ onSubmit }) {
-  const [inputValue, SetInputValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = evt => {
-    SetInputValue(evt.currentTarget.value);
+    setInputValue(evt.currentTarget.value);
   };
 
   const onFormSubmit = evt => {
