@@ -9,36 +9,36 @@ import styles from './styles.module.css';
 const APIKEY = '27281986-59f4397e165b177c7084776c9';
 
 function App() {
-  const [name, SetName] = useState('');
-  const [images, SetImages] = useState([]);
-  const [page, SetPage] = useState(1);
-  const [loading, SetLoading] = useState(false);
-  const [showModal, SetShowModal] = useState(false);
-  const [modalImage, SetModalImage] = useState('');
-  const [totalImages, SetTotalImages] = useState('');
-  const [tag, SetTag] = useState('');
-  const [showBtn, SetShowBtn] = useState(false);
+  const [name, setName] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalImage, setModalImage] = useState('');
+  const [totalImages, setTotalImages] = useState('');
+  const [tag, setTag] = useState('');
+  const [showBtn, setShowBtn] = useState(false);
 
   useEffect(() => {
     if (!name) {
       return;
     }
-    SetLoading(true);
+    setLoading(true);
     fetch(
       `https://pixabay.com/api/?q=${name}&page=${page}&key=${APIKEY}&image_type=photo&orientation=horizontal&per_page=12`
     )
       .then(response => response.json())
       .then(image => {
         if (!image.total) {
-          SetLoading(false);
-          SetShowBtn(false);
+          setLoading(false);
+          setShowBtn(false);
           return alert('К сожалению по Вашему запросу ничего не найдено');
         }
 
-        SetImages(prevState => [...prevState, ...image.hits]);
-        SetTotalImages(image.total);
-        SetLoading(false);
-        SetShowBtn(true);
+        setImages(prevState => [...prevState, ...image.hits]);
+        setTotalImages(image.total);
+        setLoading(false);
+        setShowBtn(true);
       })
       .catch(error => error);
   }, [name, page]);
@@ -47,23 +47,23 @@ function App() {
     if (name === inputName) {
       return alert(`Вы уже просматриваете ${inputName}`);
     }
-    SetName(inputName.toLowerCase());
-    SetImages([]);
-    SetPage(1);
+    setName(inputName.toLowerCase());
+    setImages([]);
+    setPage(1);
   };
 
   const onLoadMoreClick = () => {
-    SetPage(prevState => prevState + 1);
+    setPage(prevState => prevState + 1);
   };
 
   const openModal = (url, tag) => {
-    SetModalImage(url);
-    SetShowModal(true);
-    SetTag(tag);
+    setModalImage(url);
+    setShowModal(true);
+    setTag(tag);
   };
 
   const modalClose = () => {
-    SetShowModal(false);
+    setShowModal(false);
   };
 
   return (
